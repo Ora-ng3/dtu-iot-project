@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 #include "Wire.h"
@@ -22,6 +23,25 @@ Quaternion qFoot;
 Quaternion qRelInitial;
 bool calibrated = false;
 unsigned long startTime;
+
+// Wifi setup
+
+const char* ssid = "Wifi name";
+const char* password = "secret password";
+
+const char* host = "192.168.my.pc.ip"; // PC IP
+const uint16_t port = 5000;
+
+WiFiClient client;
+
+unsigned long lastSend = 0;
+const int sendInterval = 50; // ms (~20 Hz)
+
+const int buzzerPin = 16;
+
+int zoneIdentifier = 0;
+
+float euler[3];
 
 void setup() {
     Wire.begin();
@@ -67,10 +87,23 @@ void setup() {
         Serial.print("Foot DMP failed: "); Serial.println(statusFoot);
     }
     
+    WiFi.begin(ssid, password);
+    Serial.print("Connecting to WiFi");
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("\nConnected!");
+    Serial.print("ESP IP: ");
+    Serial.println(WiFi.localIP());
+
     startTime = millis();
 }
 
 void loop() {
+ 
     if (!dmpReadyTibia || !dmpReadyFoot) return;
 
     bool updated = false;
@@ -107,7 +140,7 @@ void loop() {
         // becomes exactly [0, 0, 0], placing the rotation far away from the gimbal lock pole.
         Quaternion qMovement = qRelInitial.getConjugate().getProduct(qRel);
 
-        float euler[3];
+        
         // The dmpGetEuler function calculates euler math directly from the given quaternion
         mpuTibia.dmpGetEuler(euler, &qMovement);
 
@@ -121,6 +154,51 @@ void loop() {
         Serial.print("\tPitch: "); Serial.print(pitch);
         Serial.print("\tRoll: "); Serial.println(roll);
     }
+
+    // Buzz if outside zone
+    if (zoneIdentifier == 1){
+        Serial.println("BUZZ");
+        tone(buzzerPin,80);
+    }
+    else {
+        noTone(buzzerPin);
+    }
+
+
+    // --- WIFI CODE --- //
+    
+
+    // Reconnect if needed
+    if (!client.connected()) {
+        Serial.println("Connecting to server...");
+        if (client.connect(host, port)) {
+        Serial.println("Connected to server");
+        } else {
+        Serial.println("Failed, retrying...");
+        delay(1000);
+        return;
+        }
+    }
+
+    // --- SEND SENSOR VALUE ---
+    unsigned long now = millis();
+    if (now - lastSend >= sendInterval) {
+        lastSend = now;
+        client.println(euler[1]); //Sending pitch
+        Serial.print("Sent: ");
+        Serial.println(euler[1]);
+    }
+
+    // --- RECEIVE DATA BACK ---
+    while (client.available()) {
+        String response = client.readStringUntil('\n');
+
+        Serial.print("Received: ");
+        Serial.println(response);
+
+        zoneIdentifier = response.toInt();
+    }
+
 
     delay(100);
 }
