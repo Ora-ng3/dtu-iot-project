@@ -2,7 +2,7 @@ import asyncio
 import json
 import websockets
 
-TCP_PORT = 5000
+TCP_PORT = 5001
 WS_PORT = 8765
 
 latest_angle = "0"

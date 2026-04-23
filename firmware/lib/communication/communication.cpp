@@ -4,10 +4,10 @@
 
 // Wifi setup
 
-const char* ssid = "iPhone de Amaury";
-const char* password = "blablacar";
+const char* ssid = "printer hp";
+const char* password = "lolmdrswagswag";
 
-const char* host = "192.168.my.pc.ip"; // PC IP
+const char* host = "172.20.10.12"; // PC IP
 const uint16_t port = 5000;
 
 WiFiClient client;

@@ -49,7 +49,7 @@ void updateDisplay(float angleDeg, const char* modeLabel) {
 
     // Shared origin for both lines.
     const int x0 = 96;
-    const int y0 = 58;
+    const int y0 = 48; // Move the origin up by 10 pixels
     const int lineLen = 22;
 
     // Draw the fixed vertical reference line
