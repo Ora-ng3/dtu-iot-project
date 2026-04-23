@@ -3,7 +3,7 @@
 #include "communication.h"
 #include "buzzer.h"
 
-# TODO: Change PC address in communication.cpp before running
+// TODO: Change PC address in communication.cpp before running
 
 void setup() {
     Serial.begin(115200);
