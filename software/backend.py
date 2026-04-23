@@ -1,4 +1,5 @@
 import asyncio
+import json
 import websockets
 
 TCP_PORT = 5000
@@ -33,8 +34,11 @@ async def handle_tcp(reader, writer):
             await writer.drain()
 
             # --- send to browser ---
+
+            payload = json.dumps({"angle": angle, "force": 0.0})
+
             for ws in clients:
-                await ws.send(latest_angle)
+                await ws.send(payload)
 
     except Exception as e:
         print("TCP error:", e)
@@ -50,7 +54,7 @@ async def handle_ws(websocket):
 
     try:
         # send latest angle immediately
-        await websocket.send(latest_angle)
+        await websocket.send(json.dumps({"angle": float(latest_angle), "force": 0.0}))
 
         async for _ in websocket:
             pass
