@@ -3,10 +3,16 @@
 #include "MPU6050_6Axis_MotionApps20.h"
 #include "Wire.h"
 
-// IMU A (Tibia) on 0x68
-MPU6050 mpuTibia(0x68);
-// IMU B (Foot) on 0x69
-MPU6050 mpuFoot(0x69);
+static constexpr int I2C_ANKLE_SCREEN_SDA = 8;
+static constexpr int I2C_ANKLE_SCREEN_SCL = 9;
+static constexpr int I2C_FOOT_SDA = 2;
+static constexpr int I2C_FOOT_SCL = 1;
+
+TwoWire i2cFoot(1);
+
+// MPU6050 objects
+MPU6050 mpuTibia(0x68); // Ankle/Tibia sensor on default I2C bus (Wire)
+MPU6050 mpuFoot(0x68, &i2cFoot); // Foot sensor on the second I2C bus
 
 bool dmpReadyTibia = false;
 bool dmpReadyFoot = false;
@@ -26,7 +32,8 @@ unsigned long startTime;
 float euler[3];
 
 void setupIMUs() {
-    Wire.begin();
+    Wire.begin(I2C_ANKLE_SCREEN_SDA, I2C_ANKLE_SCREEN_SCL, 400000);
+    i2cFoot.begin(I2C_FOOT_SDA, I2C_FOOT_SCL, 400000);
 
     Serial.println("Initializing I2C devices...");
     mpuTibia.initialize();
@@ -37,20 +44,20 @@ void setupIMUs() {
     uint8_t statusFoot = mpuFoot.dmpInitialize();
 
     // IMU A (Tibia) Offsets
-    mpuTibia.setXAccelOffset(-1179);
-    mpuTibia.setYAccelOffset(2043);
-    mpuTibia.setZAccelOffset(1010);
-    mpuTibia.setXGyroOffset(18);
-    mpuTibia.setYGyroOffset(-13);
-    mpuTibia.setZGyroOffset(12);
+    mpuTibia.setXAccelOffset(-657);
+    mpuTibia.setYAccelOffset(341);
+    mpuTibia.setZAccelOffset(1471);
+    mpuTibia.setXGyroOffset(12);
+    mpuTibia.setYGyroOffset(35);
+    mpuTibia.setZGyroOffset(0);
 
     // IMU B (Foot) Offsets
-    mpuFoot.setXAccelOffset(-693);
-    mpuFoot.setYAccelOffset(335);
-    mpuFoot.setZAccelOffset(1519);
-    mpuFoot.setXGyroOffset(66);
-    mpuFoot.setYGyroOffset(38);
-    mpuFoot.setZGyroOffset(-4);
+    mpuFoot.setXAccelOffset(-1015);
+    mpuFoot.setYAccelOffset(2009);
+    mpuFoot.setZAccelOffset(1045);
+    mpuFoot.setXGyroOffset(41);
+    mpuFoot.setYGyroOffset(-8);
+    mpuFoot.setZGyroOffset(2);
 
     if (statusTibia == 0) {
         mpuTibia.setDMPEnabled(true);
@@ -92,9 +99,9 @@ float getAngle() {
         // Q_relative = Q_Tibia_Inverse * Q_Foot
         Quaternion qRel = qTibia.getConjugate().getProduct(qFoot);
         
-        // Wait 5 seconds for the DMP to fully stabilize before taking the "Neutral" snapshot
+        // Wait 3 seconds for the DMP to fully stabilize before taking the "Neutral" snapshot
         if (!calibrated) {
-            if (millis() - startTime < 5000) return 0;
+            if (millis() - startTime < 3000) return 0;
             qRelInitial = qRel;
             calibrated = true;
             Serial.println("--- CALIBRATED NEUTRAL POSE ---");
@@ -116,8 +123,22 @@ float getAngle() {
         float roll = euler[2] * 180 / M_PI;
 
         // Outputting the isolated angle from the neutral starting pose
-        return pitch;
+        return (90 + pitch);
     }
+
+    return 0;
+}
+
+bool areIMUsReady() {
+    return dmpReadyTibia && dmpReadyFoot;
+}
+
+bool isTibiaReady() {
+    return dmpReadyTibia;
+}
+
+bool isFootReady() {
+    return dmpReadyFoot;
 }
 
 void calibrateNeutralPose() {
