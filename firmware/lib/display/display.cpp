@@ -29,7 +29,7 @@ void setupDisplay() {
     oled.display();
 }
 
-void updateDisplay(float angleDeg, const char* modeLabel) {
+void updateDisplay(float angleDeg, const char* modeLabel, bool wifiConnected) {
     if (!oledReady) {
         return;
     }
@@ -46,6 +46,10 @@ void updateDisplay(float angleDeg, const char* modeLabel) {
     oled.setCursor(0, 10);
     oled.print("Mode: ");
     oled.println(modeLabel);
+
+    oled.setCursor(0, 20);
+    oled.print("WiFi: ");
+    oled.println(wifiConnected ? "Connected" : "Offline");
 
     // Shared origin for both lines.
     const int x0 = 96;

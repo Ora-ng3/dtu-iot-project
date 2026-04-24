@@ -74,7 +74,7 @@ void loop() {
         Serial.println(isFootReady() ? "OK" : "NO");
     }
 
-    updateDisplay(angle, modeLabel);
+    updateDisplay(angle, modeLabel, isWifiConnected());
 
     sendData(angle);
 

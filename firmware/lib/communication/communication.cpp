@@ -4,11 +4,11 @@
 
 // Wifi setup
 
-const char* ssid = "printer hp";
+const char* ssid = "Printer hp";
 const char* password = "lolmdrswagswag";
 
 const char* host = "172.20.10.12"; // PC IP
-const uint16_t port = 5000;
+const uint16_t port = 5001;
 
 WiFiClient client;
 
@@ -74,7 +74,7 @@ void sendData(float angle) {
             return;
         }
 
-        client.println(angle); //Sending pitch
+        client.println(angle-90); //Sending pitch
         Serial.print("Sent: ");
         Serial.println(angle);
     }
@@ -89,5 +89,9 @@ void receiveData() {
 
         zoneIdentifier = response.toInt();
     }
+}
+
+bool isWifiConnected() {
+    return WiFi.status() == WL_CONNECTED;
 }
     
