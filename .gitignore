@@ -3,6 +3,7 @@
 
 /.vscode
 
+frontend_without_node_modules.zip
 
 # Dependencies
 node_modules/

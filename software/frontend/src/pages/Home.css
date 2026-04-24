@@ -1,0 +1,150 @@
+/* ── Page ────────────────────────────────────────────────── */
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+/* ── Nav ─────────────────────────────────────────────────── */
+.home-nav {
+  height: 64px;
+  padding: 0 10%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.home-nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-nav__wordmark {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+/* Connection pill */
+.conn-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.conn-pill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.conn-pill__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.conn-pill--connected    .conn-pill__dot   { background: var(--color-good); box-shadow: 0 0 5px var(--color-good); }
+.conn-pill--connected    .conn-pill__label { color: var(--color-good); }
+.conn-pill--connecting   .conn-pill__dot   { background: var(--color-warn); animation: pulse-dot 1.2s ease-in-out infinite; }
+.conn-pill--connecting   .conn-pill__label { color: var(--color-warn); }
+.conn-pill--disconnected .conn-pill__dot   { background: var(--color-text-3); }
+.conn-pill--disconnected .conn-pill__label { color: var(--color-text-2); }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Body (hero + deco canvas) ───────────────────────────── */
+.home-body {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  z-index: 1;
+  width: 55%;
+  padding: 0 0 0 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.hero__logo {
+  /* logo gap already provided by flexbox gap */
+}
+
+.hero__title {
+  font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-1);
+  line-height: 1;
+}
+
+.hero__sub {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-2);
+  margin-top: -4px;
+}
+
+/* ── CTA button ──────────────────────────────────────────── */
+.cta-btn {
+  margin-top: 8px;
+  padding: 14px 32px;
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.cta-btn:hover  { filter: brightness(1.15); }
+.cta-btn:active { filter: brightness(0.9); }
+
+/* ── Decorative canvas ───────────────────────────────────── */
+.home-deco {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 45%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.home-deco__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .home-nav  { padding: 0 5%; }
+  .hero      { width: 100%; padding: 0 5%; }
+  .home-deco { display: none; }
+}
