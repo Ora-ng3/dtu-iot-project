@@ -6,5 +6,6 @@
 void setupDisplay();
 
 void updateDisplay(float angleDeg, const char* modeLabel, bool wifiConnected);
+void updateForceDisplay(float force, const char* modeLabel, bool wifiConnected, int maxForce);
 
 #endif

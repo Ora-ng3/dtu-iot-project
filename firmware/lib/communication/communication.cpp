@@ -57,7 +57,7 @@ void reconnect() {
     }
 }
 
-void sendData(float angle) {
+void sendData(float angle, float force) {
     unsigned long now = millis();
     if (now - lastSend >= sendInterval) {
         lastSend = now;
@@ -74,9 +74,10 @@ void sendData(float angle) {
             return;
         }
 
-        client.println(angle-90); //Sending pitch
+        String data = String(angle) + "," + String(force);
+        client.println(data);
         Serial.print("Sent: ");
-        Serial.println(angle);
+        Serial.println(data);
     }
 }
 

@@ -5,7 +5,7 @@
 
 void setupWiFi();
 
-void sendData(float angle);
+void sendData(float angle, float force);
 
 bool isWifiConnected();
 
