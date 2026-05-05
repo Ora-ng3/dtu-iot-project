@@ -1,9 +1,7 @@
 #include <Arduino.h>
-#include <cmath>
 #include "fsr.h"
-#include "display.h"
 
-const int FSR_PIN = 5;
+const int FSR_PIN = 4;
 const int READINGS_REQUIRED = 4;
 const float VCC = 3.3f;
 const int ADC_RESOLUTION = 12;
@@ -107,12 +105,12 @@ void computeCalibration() {
 
 void setup() {
     Serial.begin(115200);
-    delay(100);
+    while (!Serial) {
+        delay(10);
+    }
 
     analogReadResolution(ADC_RESOLUTION);
     fsr.begin();
-    setupDisplay();
-    updateDisplay(0.0f, "TEST", false);
 
     Serial.println("=== Calibration FSR ===");
     Serial.println("Ce test lit 4 poids différents et calcule un modèle linéaire.");
