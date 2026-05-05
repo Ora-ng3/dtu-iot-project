@@ -123,7 +123,7 @@ float getAngle() {
         float roll = euler[2] * 180 / M_PI;
 
         // Outputting the isolated angle from the neutral starting pose
-        return ( pitch);
+        return (-pitch);
     }
 
     return 0;

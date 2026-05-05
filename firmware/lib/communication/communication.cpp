@@ -47,11 +47,17 @@ void setupWiFi() {
 void reconnect() {
     if (!client.connected()) {
         Serial.println("Connecting to server...");
-        if (client.connect(host, port)) {
+        unsigned long now = millis();
+        bool connection = client.connect(host, port, 200);
+        unsigned long elapsed = millis() - now;
+        Serial.print("Connection attempt took ");
+        Serial.print(elapsed);
+        Serial.println(" ms");
+        if (connection) {
         Serial.println("Connected to server");
         } else {
         Serial.println("Failed, retrying...");
-        delay(1000);
+        //delay(1000);
         return;
         }
     }
