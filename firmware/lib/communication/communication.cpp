@@ -4,16 +4,18 @@
 
 // Wifi setup
 
-const char* ssid = "iPhone de Amaury";
-const char* password = "blablacar";
+const char* ssid = "Printer hp";
+const char* password = "lolmdrswagswag";
 
-const char* host = "192.168.my.pc.ip"; // PC IP
-const uint16_t port = 5000;
+const char* host = "172.20.10.12"; // PC IP
+const uint16_t port = 5001;
 
 WiFiClient client;
 
 unsigned long lastSend = 0;
 const int sendInterval = 50; // ms (~20 Hz)
+unsigned long lastReconnectAttempt = 0;
+const unsigned long reconnectInterval = 1000;
 
 const int buzzerPin = 16;
 
@@ -21,37 +23,24 @@ int zoneIdentifier = 0;
 
 
 void setupWiFi() {
+    const unsigned long wifiTimeoutMs = 10000;
+    const unsigned long startMs = millis();
+
+    WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     Serial.print("Connecting to WiFi");
 
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED && (millis() - startMs) < wifiTimeoutMs) {
         delay(500);
         Serial.print(".");
     }
 
-    Serial.println("\nConnected!");
-    Serial.print("ESP IP: ");
-    Serial.println(WiFi.localIP());
-}
-
-void sendData(float angle) {
-    unsigned long now = millis();
-    if (now - lastSend >= sendInterval) {
-        lastSend = now;
-        client.println(angle); //Sending pitch
-        Serial.print("Sent: ");
-        Serial.println(angle);
-    }
-}
-
-void receiveData() {
-    while (client.available()) {
-        String response = client.readStringUntil('\n');
-
-        Serial.print("Received: ");
-        Serial.println(response);
-
-        zoneIdentifier = response.toInt();
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("\nConnected!");
+        Serial.print("ESP IP: ");
+        Serial.println(WiFi.localIP());
+    } else {
+        Serial.println("\nWiFi timeout, continuing without network");
     }
 }
 
@@ -66,5 +55,44 @@ void reconnect() {
         return;
         }
     }
+}
+
+void sendData(float angle, float force) {
+    unsigned long now = millis();
+    if (now - lastSend >= sendInterval) {
+        lastSend = now;
+
+        if (WiFi.status() != WL_CONNECTED) {
+            return;
+        }
+
+        if (!client.connected()) {
+            if (now - lastReconnectAttempt >= reconnectInterval) {
+                lastReconnectAttempt = now;
+                reconnect();
+            }
+            return;
+        }
+
+        String data = String(angle) + "," + String(force);
+        client.println(data);
+        Serial.print("Sent: ");
+        Serial.println(data);
+    }
+}
+
+void receiveData() {
+    while (client.available()) {
+        String response = client.readStringUntil('\n');
+
+        Serial.print("Received: ");
+        Serial.println(response);
+
+        zoneIdentifier = response.toInt();
+    }
+}
+
+bool isWifiConnected() {
+    return WiFi.status() == WL_CONNECTED;
 }
     
