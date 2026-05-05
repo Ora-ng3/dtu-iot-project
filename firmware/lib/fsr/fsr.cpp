@@ -1,5 +1,8 @@
 #include "fsr.h"
 
+float prevForce = 0.0f;
+float filterWeight = 0.1f; // Poids pour le filtre de lissage (0.1 = 10% du nouveau, 90% de l'ancien)
+
 FSR::FSR(int pin) {
     _pin = pin;
 }
@@ -12,8 +15,9 @@ int FSR::getRawValue() {
     return analogRead(_pin);
 }
 
-float FSR::getForce() {
-    // Pour l'instant, nous retournons la valeur brute.
-    // Une conversion en force réelle (par exemple, en Newtons) nécessiterait un étalonnage.
-    return getRawValue();
+int FSR::getForce() {
+    int adc_raw = getRawValue();
+    
+
+    return adc_raw ; 
 }

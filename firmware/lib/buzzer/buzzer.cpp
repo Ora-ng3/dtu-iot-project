@@ -1,7 +1,7 @@
 #include "buzzer.h"
 #include <Arduino.h>
 
-const int buzzerPin = 16;
+const int buzzerPin = 3;
 static bool buzzerActive = false;
 
 void setupBuzzer() {
@@ -16,7 +16,7 @@ void buzz() {
     }
 
     Serial.println("BUZZ");
-    tone(buzzerPin, 80); // Buzz at 80 Hz
+    tone(buzzerPin, 800); // Buzz at 80 Hz
     buzzerActive = true;
 }
 

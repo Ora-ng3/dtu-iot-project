@@ -6,11 +6,12 @@ TCP_PORT = 5001
 WS_PORT = 8765
 
 latest_angle = "0"
+latest_force = 0.0
 clients = set()
 
 # --- TCP SERVER (ESP8266 sends data here) ---
 async def handle_tcp(reader, writer):
-    global latest_angle
+    global latest_angle, latest_force
     addr = writer.get_extra_info('peername')
     print(f"ESP8266 connected: {addr}")
 
@@ -20,8 +21,17 @@ async def handle_tcp(reader, writer):
             if not data:
                 break
 
-            angle = float(data.decode().strip())
+            text = data.decode().strip()
+            if ',' in text:
+                angle_text, force_text = text.split(',', 1)
+                angle = float(angle_text)
+                force = float(force_text)
+            else:
+                angle = float(text)
+                force = 0.0
+
             latest_angle = str(angle)
+            latest_force = force
 
             # --- check bounds for angle ---
             if angle < 100 or angle > 900:
@@ -34,8 +44,7 @@ async def handle_tcp(reader, writer):
             await writer.drain()
 
             # --- send to browser ---
-
-            payload = json.dumps({"angle": angle, "force": 0.0})
+            payload = json.dumps({"angle": angle, "force": force})
 
             for ws in clients:
                 await ws.send(payload)
@@ -53,8 +62,8 @@ async def handle_ws(websocket):
     print("Browser connected")
 
     try:
-        # send latest angle immediately
-        await websocket.send(json.dumps({"angle": float(latest_angle), "force": 0.0}))
+        # send latest angle and force immediately
+        await websocket.send(json.dumps({"angle": float(latest_angle), "force": latest_force}))
 
         async for _ in websocket:
             pass

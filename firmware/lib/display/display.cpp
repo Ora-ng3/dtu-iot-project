@@ -68,7 +68,7 @@ void updateDisplay(float angleDeg, const char* modeLabel, bool wifiConnected) {
     oled.display();
 }
 
-void updateForceDisplay(float force, const char* modeLabel, bool wifiConnected, int maxForce) {
+void updateForceDisplay(int force, const char* modeLabel, bool wifiConnected, int maxForce) {
     if (!oledReady) {
         return;
     }
@@ -80,7 +80,7 @@ void updateForceDisplay(float force, const char* modeLabel, bool wifiConnected, 
     oled.setCursor(0, 0);
     oled.print("Force: ");
     oled.print(force, 1);
-    oled.println(" N");
+    oled.println(" g");
 
     oled.setCursor(0, 10);
     oled.print("Mode: ");
@@ -94,6 +94,6 @@ void updateForceDisplay(float force, const char* modeLabel, bool wifiConnected, 
     int gaugeWidth = map(force, 0, maxForce, 0, SCREEN_WIDTH - 10);
     oled.drawRect(5, SCREEN_HEIGHT - 15, SCREEN_WIDTH - 10, 10, SSD1306_WHITE);
     oled.fillRect(5, SCREEN_HEIGHT - 15, gaugeWidth, 10, SSD1306_WHITE);
-
+    delay(10); // Small delay to ensure the display updates smoothly
     oled.display();
 }

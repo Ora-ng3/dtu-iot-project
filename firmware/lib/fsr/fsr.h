@@ -7,7 +7,7 @@ class FSR {
 public:
     FSR(int pin);
     void begin();
-    float getForce(); // Pourrait être utilisé plus tard pour une conversion en Newtons, etc.
+    int getForce(); // Pourrait être utilisé plus tard pour une conversion en Newtons, etc.
     int getRawValue();
 
 private:
