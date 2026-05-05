@@ -44,3 +44,4 @@ pnpm-debug.log*
 coverage/
 
 Ankle Rehab project.zip
+firmware/.pio/build/project.checksum
