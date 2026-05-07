@@ -1,8 +1,5 @@
 #include "fsr.h"
 
-float prevForce = 0.0f;
-float filterWeight = 0.1f; // Poids pour le filtre de lissage (0.1 = 10% du nouveau, 90% de l'ancien)
-
 FSR::FSR(int pin) {
     _pin = pin;
 }
@@ -17,7 +14,9 @@ int FSR::getRawValue() {
 
 int FSR::getForce() {
     int adc_raw = getRawValue();
-    
+    // we wanted to convert the raw adc values but it was not consistent the sensor had
+    // to be calibrated every 20 minutes and it was not worth the effort for the current project,
+    // so we just return the raw value for now
 
     return adc_raw ; 
 }

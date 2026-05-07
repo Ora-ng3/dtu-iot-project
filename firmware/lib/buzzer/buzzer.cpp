@@ -16,7 +16,7 @@ void buzz() {
     }
 
     Serial.println("BUZZ");
-    tone(buzzerPin, 800); // Buzz at 80 Hz
+    tone(buzzerPin, 800); // Buzz at 800 Hz
     buzzerActive = true;
 }
 

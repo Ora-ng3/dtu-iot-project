@@ -1,5 +1,4 @@
 #include "display.h"
-
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
